@@ -1,0 +1,174 @@
+# Tier 3 seed records, derived from 03-source-registry.md (human-verified
+# 2026-08-02). Projections are historical-pattern windows, entered as all-day
+# spans and narrowed as reporting comes in — never single days.
+#
+# Deliberately NOT seeded: APK 2026 (29–31 Oct, Seoul). It is the Phase 3
+# acceptance test — the Tier 2 pipeline must find it, not have it typed in.
+
+- uid: pc-beidaihe-2026
+  title_en: Beidaihe leadership retreat (window)
+  title_zh: 北戴河会议
+  start: "2026-07-25"
+  end: "2026-08-15"
+  all_day: true
+  timezone: Asia/Shanghai
+  tier: 3
+  status: projected
+  sectors: [foreign_policy]
+  actors: [CCP]
+  evidence: >-
+    Late July to mid-August, inferred from historical pattern; never announced.
+    Narrow via leadership-absence reporting. Per 03-source-registry.md.
+  note: Informal; watch for absence of Politburo members from public schedule.
+
+- uid: pc-npcsc-session-aug-2026
+  title_en: NPC Standing Committee session (late August, projected)
+  title_zh: 全国人大常委会会议
+  start: "2026-08-20"
+  end: "2026-08-31"
+  all_day: true
+  timezone: Asia/Shanghai
+  tier: 3
+  status: projected
+  sectors: [foreign_policy, trade]
+  actors: [NPCSC]
+  evidence: >-
+    NPC Observer 2026 post-session note pointed to the next regularly scheduled
+    NPCSC session in late August. Window pending official announcement.
+  source_url: https://npcobserver.com/
+
+- uid: pc-cc-plenum-window-2026
+  title_en: 20th Central Committee plenum window (projected)
+  title_zh: 中共二十届中央委员会全会
+  start: "2026-10-01"
+  end: "2026-10-31"
+  all_day: true
+  timezone: Asia/Shanghai
+  tier: 3
+  status: projected
+  sectors: [foreign_policy, economy]
+  actors: [CCP]
+  evidence: >-
+    Plenum timing follows the five-year cycle; the Fourth Plenum was October
+    2025. October window projected for a possible Fifth Plenum; confirm via
+    Politburo meeting announcements. Per 03-source-registry.md.
+
+- uid: pc-canton-fair-autumn-2026
+  title_en: Canton Fair, autumn phases (projected)
+  title_zh: 广交会（秋季）
+  start: "2026-10-15"
+  end: "2026-11-04"
+  all_day: true
+  timezone: Asia/Shanghai
+  tier: 3
+  status: projected
+  sectors: [trade]
+  actors: [MOFCOM]
+  evidence: >-
+    Fixed-date commercial calendar; autumn edition runs mid-October to early
+    November in three phases, stable year to year. Per 03-source-registry.md.
+
+- uid: pc-ciie-2026
+  title_en: China International Import Expo (CIIE), Shanghai (projected)
+  title_zh: 中国国际进口博览会
+  start: "2026-11-05"
+  end: "2026-11-10"
+  all_day: true
+  timezone: Asia/Shanghai
+  tier: 3
+  status: projected
+  sectors: [trade]
+  actors: [MOFCOM]
+  evidence: >-
+    Early November, Shanghai; 5–10 November every year since 2018. Projected
+    until the official 2026 announcement is fetched. Per 03-source-registry.md.
+
+- uid: pc-cewc-2026
+  title_en: Central Economic Work Conference (window)
+  title_zh: 中央经济工作会议
+  start: "2026-12-07"
+  end: "2026-12-18"
+  all_day: true
+  timezone: Asia/Shanghai
+  tier: 3
+  status: projected
+  sectors: [economy, trade]
+  actors: [CCP, State_Council]
+  evidence: >-
+    Held every December; exact dates announced days ahead or after the fact.
+    Mid-December window from historical pattern. Per 03-source-registry.md.
+
+- uid: pc-two-sessions-2027
+  title_en: Two Sessions (NPC & CPPCC), Beijing (projected)
+  title_zh: 全国两会
+  start: "2027-03-04"
+  end: "2027-03-12"
+  all_day: true
+  timezone: Asia/Shanghai
+  tier: 3
+  status: projected
+  sectors: [foreign_policy, economy, trade]
+  actors: [NPC, CPPCC]
+  evidence: >-
+    CPPCC opens 4 March, NPC opens 5 March in recent years; 2026 session ran
+    5–12 March per NPC Observer. 2027 window projected from that pattern.
+  source_url: https://npcobserver.com/
+
+- uid: pc-cdf-2027
+  title_en: China Development Forum, Beijing (projected)
+  title_zh: 中国发展高层论坛
+  start: "2027-03-20"
+  end: "2027-03-24"
+  all_day: true
+  timezone: Asia/Shanghai
+  tier: 3
+  status: projected
+  sectors: [economy, trade]
+  actors: [State_Council]
+  evidence: >-
+    Late March, Beijing, directly after Two Sessions; stable year to year.
+    Per 03-source-registry.md fixed-date commercial calendar.
+
+- uid: pc-boao-2027
+  title_en: Boao Forum for Asia, Hainan (projected)
+  title_zh: 博鳌亚洲论坛
+  start: "2027-03-25"
+  end: "2027-03-28"
+  all_day: true
+  timezone: Asia/Shanghai
+  tier: 3
+  status: projected
+  sectors: [economy, foreign_policy]
+  actors: [Boao_Forum]
+  evidence: >-
+    Late March, Hainan; stable year to year. Per 03-source-registry.md
+    fixed-date commercial calendar.
+
+- uid: pc-canton-fair-spring-2027
+  title_en: Canton Fair, spring phases (projected)
+  title_zh: 广交会（春季）
+  start: "2027-04-15"
+  end: "2027-05-05"
+  all_day: true
+  timezone: Asia/Shanghai
+  tier: 3
+  status: projected
+  sectors: [trade]
+  actors: [MOFCOM]
+  evidence: >-
+    Fixed-date commercial calendar; spring edition runs mid-April to early May
+    in three phases. Per 03-source-registry.md.
+
+- uid: pc-shangri-la-dialogue-2027
+  title_en: Shangri-La Dialogue, Singapore (projected)
+  start: "2027-05-28"
+  end: "2027-06-06"
+  all_day: true
+  timezone: Asia/Singapore
+  tier: 3
+  status: projected
+  sectors: [foreign_policy, security]
+  actors: [IISS]
+  evidence: >-
+    Late May / early June, Singapore, annually. Window projected from pattern.
+    Per 03-source-registry.md bilateral and multilateral formats.

@@ -1,0 +1,10 @@
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+.wiki/
+.env
+dist/
+store/
+deploy/server/.env
+deploy/server/auth-state/

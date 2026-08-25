@@ -1,0 +1,40 @@
+# Topic profile — the selection gate scores items against this. It is copied
+# to the store by `pcal init` and versioned there; this file is only the
+# initial content. Tune the store copy (via MCP profile_amend or by hand),
+# not this one.
+
+version: 1
+updated: "2026-08-02"
+scope: >-
+  Dates relevant to German foreign and foreign-economic policy, with a focus
+  on China and the wider Asia-Pacific. A DATE tracker: items must carry a
+  forward-looking date or window.
+
+clusters:
+  german_institutional:
+    description: German institutional rhythm that structures the policy calendar
+    actors: [Bundestag, Bundesrat, Auswärtiger Ausschuss, Ausschuss für Wirtschaft und Energie, BMWE, Auswärtiges Amt, Bundesregierung]
+    keywords_de: [Sitzungswoche, Plenarsitzung, Tagesordnung, Regierungserklärung, Terminvorschau, Ausschusssitzung]
+  eu:
+    description: EU layer touching China / trade defence / foreign economic policy
+    actors: [EU Council, European Council, European Commission, European Parliament]
+    keywords_en: [EU-China, Foreign Affairs Council, Trade, anti-dumping, anti-subsidy, FDI screening, economic security]
+    keywords_de: [Handelspolitik, Ratspräsidentschaft]
+  business_formats:
+    description: German business/Asia formats
+    actors: [APA, OAV, BDI, DIHK, GTAI, AHK, BGA]
+    keywords_de: [Asien-Pazifik-Konferenz, Außenwirtschaft, Delegationsreise, Wirtschaftstag]
+    keywords_en: [Asia-Pacific Conference, business delegation]
+  china:
+    description: Chinese party-state and commercial calendar, bilateral formats
+    actors: [NPC, NPCSC, CPPCC, CCP, State Council, MOFCOM, MFA]
+    keywords_en: [Two Sessions, plenum, Politburo, Beidaihe, CIIE, Canton Fair, Regierungskonsultationen, EU-China Summit]
+    keywords_zh: [全国两会, 全国人大, 政协, 中央全会, 政治局, 北戴河, 进博会, 广交会, 中央经济工作会议]
+
+sectors: [foreign_policy, trade, economy, tech, energy, security]
+
+reject_hints:
+  - Purely domestic German items with no foreign, EU or China angle
+  - Ceremonial/commemorative events without policy content
+  - Retrospective items (reports about past events) with no upcoming date
+  - Cultural programming, exhibitions, city partnerships

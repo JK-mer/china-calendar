@@ -1,0 +1,8 @@
+[Unit]
+Description=china-calendar daily store backup (cold copy, newest 5 kept)
+# Copies of these units live in the repo under deploy/systemd/; installed to
+# ~/.config/systemd/user/.
+
+[Service]
+Type=oneshot
+ExecStart=%h/china-calendar/deploy/systemd/pcal-backup.sh

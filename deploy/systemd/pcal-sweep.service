@@ -1,0 +1,14 @@
+[Unit]
+Description=china-calendar daily sweep (fetch, gate, recheck, digest)
+# Runs inside the always-on MCP container: it has the deps, the LLM key
+# and the store mount. Copies of these units live in the repo under
+# deploy/systemd/; installed to ~/.config/systemd/user/.
+After=docker.service
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/docker exec china-calendar-mcp pcal sweep
+ExecStart=/usr/bin/docker exec china-calendar-mcp pcal calsync
+ExecStart=/usr/bin/docker exec china-calendar-mcp pcal digest
+# Change alerts (#23): host-side so occ (Nextcloud container) is reachable.
+ExecStart=%h/china-calendar/deploy/systemd/pcal-alerts.sh

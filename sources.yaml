@@ -1,0 +1,552 @@
+# Source registry — Tier 1/2 fetch targets. Parsers are coupled to code, so
+# this file lives in the repo; the topic profile lives in the store.
+#
+# auto_accept is only for (source, item-type) pairs trusted end-to-end
+# (design: selection gate). Everything else goes to triage.
+
+- id: bundesrat-plenum-2026
+  tier: 1
+  kind: ics
+  url: "https://www.bundesrat.de/SharedDocs/downloads/DE/sonstiges/download-termine-sitzungen-bundesrat-2026.ics?__blob=publicationFile&v=6"
+  skeleton: true
+  covers_year: 2026
+  auto_accept: true
+  calendar_default_off: true
+  title_prefix: "Bundesrat"
+  sectors: [german_institutional]
+  actors: [Bundesrat]
+  timezone: Europe/Berlin
+  notes: >-
+    Official Plenartermine ICS, linked from
+    https://www.bundesrat.de/DE/termine/plenum/plenum.html. ETag supported.
+    The v= query parameter changes when the file is re-published; if the URL
+    404s, re-discover it from the landing page.
+
+- id: bundesrat-plenum-2027
+  tier: 1
+  kind: ics
+  url: "https://www.bundesrat.de/SharedDocs/downloads/DE/sonstiges/download-termine-sitzungen-bundesrat-2027.ics?__blob=publicationFile&v=2"
+  skeleton: true
+  covers_year: 2027
+  auto_accept: true
+  calendar_default_off: true
+  title_prefix: "Bundesrat"
+  sectors: [german_institutional]
+  actors: [Bundesrat]
+  timezone: Europe/Berlin
+
+- id: bundesrat-tagesordnung
+  tier: 1
+  kind: "html:bundesrat-to"
+  url: "https://www.bundesrat.de/DE/plenum/to-plenum/to-plenum-node.html"
+  auto_accept: false
+  enrich_actor: Bundesrat
+  sectors: [german_institutional]
+  actors: [Bundesrat]
+  timezone: Europe/Berlin
+  notes: >-
+    Per-session TOPs through the selection gate. An accepted TOP enriches the
+    skeleton Plenarsitzung event of that date (note + corroborating source)
+    instead of creating a new event. Tagesordnungen publish ~2 weeks before
+    each session; ~90 TOPs per session, most auto-rejected.
+
+- id: bundestag-ausschuss-to
+  tier: 1
+  kind: "rss:bundestag-to"
+  url: "https://www.bundestag.de/static/appdata/includes/rss/tagesordnungen.rss"
+  auto_accept: false
+  sectors: [german_institutional]
+  actors: [Bundestag]
+  timezone: Europe/Berlin
+  prefilter_keywords:
+    - "auswärtig"
+    - "wirtschaft"
+    - "europ"
+    - "menschenrechte"
+    - "verteidigung"
+    - "digital"
+    - "handel"
+  notes: >-
+    Committee Tagesordnungen RSS — forward-looking sitting notices (#11's
+    committee-agenda item, found 2026-08-03). RSS titles carry only
+    committee + session + datetime, no topics, so relevance = committee
+    name: the prefilter keeps the foreign/economic/EU-relevant committees
+    without burning classifier calls on Tourismus etc. Rejected committees
+    stay overridable in the dashboard Journal. TOP details live in the
+    linked PDF (not fetched).
+
+- id: bdi-veranstaltungen
+  tier: 2
+  kind: "html:bdi"
+  url: "https://bdi.eu/de/veranstaltungen"
+  auto_accept: false
+  sectors: [business_formats]
+  actors: [BDI]
+  timezone: Europe/Berlin
+  notes: >-
+    BDI events listing (user request 2026-08-03) — server-rendered
+    li.bdi-event blocks, forward-looking (Tag der Industrie,
+    Wirtschaftsforen). Non-whitelisted: items go through the classifier;
+    most BDI events are domestic, the Asia/trade formats are the catch.
+
+- id: bundespraesident-termine
+  tier: 2
+  kind: "html:bundespraesident"
+  url: "https://www.bundespraesident.de/DE/reden-und-aktuelles/termine/termine_node.html"
+  auto_accept: false
+  sectors: [german_institutional]
+  actors: [Bundespraesident]
+  timezone: Europe/Berlin
+  prefilter_keywords:
+    - "präsident"          # visiting heads of state ("Präsident der Republik …")
+    - "staatsbesuch"
+    - "staatsoberhaupt"
+    - "könig"
+    - "premierminister"
+    - "ministerpräsident"
+    - "militärischen ehren"
+    - "akkreditierung"
+    - "botschafter"
+    - "reise"
+    - "besuch"
+  notes: >-
+    THE state-visit source (user request 2026-08-03): incoming/outgoing
+    state visits, receptions with military honours, ambassador
+    accreditations. The node URL redirects to the Terminsuche result page —
+    follow_redirects handles it. Most entries are domestic ceremony; the
+    prefilter keeps the diplomatic ones for the classifier, the rest
+    auto-reject for free (overridable in the Journal).
+
+- id: ipu-elections
+  tier: 2
+  kind: "html:ipu-elections"
+  url: "https://data.ipu.org/elections/"
+  auto_accept: false
+  sectors: [elections]
+  actors: []
+  timezone: Europe/Berlin
+  prefilter_keywords:
+    # regions the user tracks (2026-08-03): EU members, wider Europe,
+    # US/CA/UK, TR/RU/BY, Asia-Pacific. IPU spellings.
+    - austria
+    - belgium
+    - bulgaria
+    - croatia
+    - cyprus
+    - czechia
+    - denmark
+    - estonia
+    - finland
+    - france
+    - germany
+    - greece
+    - hungary
+    - ireland
+    - italy
+    - latvia
+    - lithuania
+    - luxembourg
+    - malta
+    - netherlands
+    - poland
+    - portugal
+    - romania
+    - slovakia
+    - slovenia
+    - spain
+    - sweden
+    - norway
+    - switzerland
+    - ukraine
+    - united kingdom
+    - united states
+    - canada
+    - türkiye
+    - russian federation
+    - belarus
+    - japan
+    - korea
+    - china
+    - mongolia
+    - india
+    - indonesia
+    - australia
+    - new zealand
+    - viet nam
+    - philippines
+    - thailand
+    - malaysia
+    - singapore
+    - pakistan
+    - bangladesh
+    - sri lanka
+    - nepal
+    - kazakhstan
+    - uzbekistan
+    - myanmar
+    - cambodia
+  notes: >-
+    Global parliamentary election dates (#28) — one server-rendered table,
+    "Expected date of next elections" column. Parliamentary only;
+    presidential races (Taiwan, Korea, US president etc.) need the IFES
+    ElectionGuide follow-up. The prefilter passes only tracked regions;
+    everything else auto-rejects for free and stays overridable in the
+    Journal. Date changes (snap elections) amend the same record via
+    country+chamber external_id.
+
+- id: bundeswahlleiterin-termine
+  tier: 2
+  kind: "html:wahltermine"
+  url: "https://www.bundeswahlleiterin.de/service/wahltermine.html"
+  auto_accept: false
+  sectors: [elections, german_institutional]
+  actors: []
+  timezone: Europe/Berlin
+  prefilter_keywords:
+    - landtagswahl
+    - "bürgerschaftswahl"
+    - abgeordnetenhaus
+    - bundestagswahl
+    - europawahl
+  notes: >-
+    Official German election dates (#28). The prefilter keeps state-level
+    and federal elections; Kommunalwahlen auto-reject for free (overridable
+    in the Journal). Rows with "Herbst"/"Frühjahr" placeholders are skipped
+    until the official date is announced.
+
+- id: electionguide-presidency
+  tier: 2
+  kind: "html:electionguide"
+  url: "https://www.electionguide.org/"
+  auto_accept: false
+  sectors: [elections]
+  actors: []
+  timezone: Europe/Berlin
+  prefilter_keywords:
+    # tracked regions, ElectionGuide's common-name spellings
+    - austria
+    - belgium
+    - bulgaria
+    - croatia
+    - cyprus
+    - czech
+    - denmark
+    - estonia
+    - finland
+    - france
+    - germany
+    - greece
+    - hungary
+    - ireland
+    - italy
+    - latvia
+    - lithuania
+    - luxembourg
+    - malta
+    - netherlands
+    - poland
+    - portugal
+    - romania
+    - slovak
+    - slovenia
+    - spain
+    - sweden
+    - norway
+    - switzerland
+    - ukraine
+    - united kingdom
+    - united states
+    - canada
+    - turkey
+    - "türkiye"
+    - russia
+    - belarus
+    - japan
+    - korea
+    - china
+    - taiwan
+    - mongolia
+    - india
+    - indonesia
+    - australia
+    - new zealand
+    - vietnam
+    - philippines
+    - thailand
+    - malaysia
+    - singapore
+    - pakistan
+    - bangladesh
+    - sri lanka
+    - nepal
+    - kazakhstan
+    - uzbekistan
+    - myanmar
+    - cambodia
+  notes: >-
+    IFES ElectionGuide homepage, PRESIDENTIAL races only (#28) — the parser
+    filters on "presiden" so parliaments stay with ipu-elections and are
+    never duplicated. Homepage is a rolling window; the daily sweep keeps
+    up. Prefilter carries the tracked-region cut.
+
+- id: eu-council-calendar
+  tier: 1
+  kind: ics
+  url: ""
+  enabled: false
+  probe_url: "https://www.consilium.europa.eu/en/meetings/calendar/"
+  sectors: [eu]
+  actors: [EU_Council]
+  timezone: Europe/Brussels
+  notes: >-
+    Council/European-Council meeting calendar — wanted for the eu cluster
+    (#19), but consilium.europa.eu serves a Cloudflare JS challenge (403,
+    cf-mitigated: challenge) to plain HTTP clients as of 2026-08-03; the
+    newsroom SPA exposed no obvious API and presidency sites rotate every
+    six months. kind/url are placeholders until reachable — the daily
+    probe watches for the posture to change. Escalation options if it
+    never does: browser-based fetch or the EP calendar as an alternative.
+
+- id: oav-veranstaltungen
+  tier: 2
+  kind: "html:oav"
+  url: "https://www.oav.de/veranstaltungen"
+  auto_accept: false
+  sectors: [business_formats]
+  actors: [OAV]
+  timezone: Europe/Berlin
+  notes: >-
+    Probably the single highest-yield Tier 2 source (design notes). The old
+    /termine/aktuelle-termine/ path from the notes 404s since the site
+    redesign; /veranstaltungen is the current listing.
+
+- id: apa-events
+  tier: 2
+  kind: "html:apa"
+  url: "https://asien-pazifik-ausschuss.de/en/events/"
+  auto_accept: false
+  sectors: [business_formats]
+  actors: [APA]
+  timezone: Europe/Berlin
+  notes: >-
+    Carries schema.org BusinessEvent JSON-LD with ISO dates — parsed from the
+    structured data, not the visible HTML. Lists historical APKs too; the
+    sweep's since-filter keeps only forward-looking items.
+
+- id: bundestag-sitzungskalender
+  tier: 1
+  kind: ics
+  url: "https://www.bundestag.de/resource/blob/1103938/Parlamentstermine_2026_ics.ics"
+  skeleton: true
+  covers_year: 2026
+  probe_url: "https://www.bundestag.de/parlament/plenum/sitzungskalender"
+  auto_accept: true
+  title_prefix: "Sitzungswoche"
+  sectors: [german_institutional]
+  actors: [Bundestag]
+  timezone: Europe/Berlin
+  notes: >-
+    The skeleton source (design notes: committees only meet inside sitting
+    weeks). Was WAF-blocked from the workstation (2026-08-02, TLS resets);
+    reachable from the NUC since 2026-08-03 — found by the disabled-source
+    probe on its first run (#2). Blob URLs come from
+    https://www.bundestag.de/parlament/plenum/sitzungskalender (= probe_url);
+    if one 404s, re-discover it there.
+
+- id: bundestag-sitzungskalender-2027
+  tier: 1
+  kind: ics
+  url: "https://www.bundestag.de/resource/blob/1193892/Parlamentstermine_2026_ics-1-.ics"
+  skeleton: true
+  covers_year: 2027
+  auto_accept: true
+  title_prefix: "Sitzungswoche"
+  sectors: [german_institutional]
+  actors: [Bundestag]
+  timezone: Europe/Berlin
+  notes: >-
+    2027 Sitzungswochen. The filename really says "2026_ics-1-" — it is the
+    2027 file ("Sitzungswochen 2027 als Kalenderimport" on the landing page).
+
+- id: npcobserver-sessions
+  tier: 2
+  kind: "rss:npcobserver"
+  url: "https://npcobserver.com/feed/"
+  auto_accept: true
+  sectors: [foreign_policy, economy]
+  actors: [NPCSC]
+  timezone: Asia/Shanghai
+  notes: >-
+    NPC Observer "Session Watch" posts (#37) — the authoritative English
+    tracker announces each scheduled NPCSC session in a rigid sentence
+    ("will convene for its 23rd session from June 23 to 26"); the parser
+    extracts only that, so the item type is narrow and always relevant:
+    whitelisted. Monthly "NPC Calendar" posts carry no day-level dates and
+    are deliberately skipped. Feed window is 10 posts; sessions announce
+    ~1 week ahead, the daily sweep is plenty.
+    Tier 2, not 1 (#49): this is a regex over prose, not a structured feed,
+    and the tier is a trust signal the dashboard shows. auto_accept stays —
+    it is earned by how narrow the item type is, not by the tier.
+
+- id: ep-plenary-ical
+  tier: 1
+  kind: ics
+  url: "https://calendar.google.com/calendar/ical/c_44a34b65470fc449cb75b0cee40363953fd2e754f4599dd2a5be8695c923bc0d%40group.calendar.google.com/public/basic.ics"
+  skeleton: true
+  covers_year: 2026
+  probe_url: "https://www.baneth.eu/my-blog/european-parliament-2026-agenda-in-google-calendar-unofficial-free"
+  auto_accept: false
+  ignore_robots: true
+  prefilter_keywords:
+    - "plena"
+  sectors: [eu]
+  actors: [European Parliament]
+  timezone: Europe/Brussels
+  notes: >-
+    ignore_robots: Google's robots.txt disallows /calendar/ical/ for
+    crawlers, but a public ICS URL is a subscription endpoint — every
+    calendar client fetches it; conditional GET, once daily.
+    UNOFFICIAL mirror (#38) of the EP calendar, maintained annually by
+    Andras Baneth — the official EP calendar is PDF/HTML only. Not
+    whitelisted because unofficial: plenary weeks ("EP - Plenary session")
+    pass the prefilter into the gate once; committee/group weeks
+    auto-reject for free. If the ICS URL dies, re-discover it on the
+    probe_url blog post (a new post appears each year).
+
+- id: pecc-events
+  tier: 2
+  kind: "html:pecc"
+  url: "https://www.pecc.org/event-calendar/upcoming-events"
+  auto_accept: false
+  sectors: [foreign_policy, economy, trade]
+  actors: [APEC, ASEAN]
+  timezone: Asia/Singapore
+  notes: >-
+    The Asia-Pacific multilateral cluster (#39) — APEC ministerials, the ASEAN
+    summit, G20 and COP, all in one rolling forward calendar. Wired less for
+    what it adds today (it listed 8 events on 2026-08-11, of which the store
+    already held 6) than for what it stops: the multilateral layer is
+    otherwise entirely hand-added, and nothing else would ever fill it for a
+    coming year.
+    TWO-HOP by necessity — the listing has NO JSON-LD and renders dates as
+    prose; the per-event pages each carry one schema.org Event with ISO dates.
+    The item url is therefore the detail page, not the listing: verify_strings
+    must be findable where the JSON-LD actually lives.
+    The JSON-LD startDate carries a spurious wall-clock time (a CMS stamp —
+    the 49th ASEAN Summit reads 11:20+08:00), so the parser keeps the date
+    only and items land all-day.
+    Not whitelisted: everything runs the gate. Volume is ~8 items, so no
+    prefilter — the classifier cost is negligible and a prefilter here would
+    just be another thing to get wrong.
+    If the listing 404s, re-discover it from the site nav: the path moved from
+    /event-calendar to /event-calendar/upcoming-events between 2026-08-03 and
+    2026-08-11, which is what this issue's original URL recorded.
+
+- id: ep-opendata-agenda
+  tier: 1
+  kind: "api:ep-opendata"
+  url: "https://data.europarl.europa.eu/api/v2/meetings"
+  auto_accept: false
+  sectors: [eu]
+  actors: [European Parliament]
+  timezone: Europe/Brussels
+  notes: >-
+    The EP's own Open Data API (#64) — the only route to agenda-level detail.
+    ep-plenary-ical emits part-session blocks and structurally cannot carry
+    what happens inside one, which is why SOTEU 2026 was missing (#63).
+    SCOPE IS NARROW ON PURPOSE: KEY DEBATE items only. The September 2026
+    part-session carried 65 agenda items across four sitting days, of which
+    exactly one was a KEY DEBATE (the State of the Union). Ordinary debates
+    and votes belong on the part-session record as enrichment, which needs
+    the cross-source duplicate question (#68) settled first.
+    The EP publishes ONE part-session's draft agenda at a time — every
+    sitting beyond the next returns 204, so the parser only probes a 60-day
+    horizon. It also asks for NEXT year's sittings every run: the API held
+    2020-2026 on 2026-08-11 and 204s for 2027, so this is what makes the
+    year roll over on a sweep instead of needing a human to notice.
+    ?format=application%2Fld%2Bjson is load-bearing everywhere, evidence URLs
+    included: the API content-negotiates to RDF/XML and the fetcher sends no
+    Accept header, so evidence stored against a bare URL could never match.
+    www.europarl.europa.eu is UA-walled (202, zero bytes) but this host and
+    oeil are not — do not blacklist the domain.
+
+- id: ep-opendata-items
+  tier: 1
+  kind: "api:ep-opendata-items"
+  url: "https://data.europarl.europa.eu/api/v2/meetings"
+  auto_accept: false
+  enrich_actor: European Parliament
+  prefilter_keywords:
+    - china
+    - chinese
+    - taiwan
+    - hong kong
+    - indo-pacific
+    - asia
+    - trade
+    - tariff
+    - customs
+    - anti-dumping
+    - anti-subsidy
+    - cbam
+    - carbon border
+    - export control
+    - dual-use
+    - semiconductor
+    - critical raw material
+    - economic security
+    - foreign direct investment
+    - screening
+    - human rights
+    - sanction
+    - foreign affairs
+    - foreign policy
+    - security and defence
+    # Geo and actor terms (review, 2026-08-11). Every one of these appears in a
+    # real adopted EP title that matched none of the keywords above: the 2022
+    # Uyghur/Xinjiang urgency, the 2023 Tibet urgency, the Anti-Coercion
+    # Instrument ("economic coercion" is not "economic security"), and the
+    # forced-labour import ban. Deliberately NOT adding bare "foreign" or
+    # "security": the reason this prefilter exists is that the classifier sits
+    # at 0.90 against a 0.95 bar and rejects nothing, so broad tokens put the
+    # ~50-item queue straight back.
+    - uyghur
+    - xinjiang
+    - tibet
+    - taiwanese
+    - forced labour
+    - coercion
+    - anti-coercion
+    - supply chain
+    - 5g
+    - cybersecurity
+  sectors: [eu]
+  actors: [European Parliament]
+  timezone: Europe/Brussels
+  notes: >-
+    Ordinary plenary debates and votes (#69) — the bulk of an EP agenda, and
+    where China resolutions, trade-agreement consents and human-rights
+    urgencies actually get decided. The September 2026 part-session carried 65
+    items across four sitting days.
+    ENRICHMENT, not events: enrich_actor attaches an accepted item to the
+    existing part-session record as a note line plus a corroborating source,
+    the Bundesrat TOP pattern. A vote is not a meeting — it is what happens
+    inside one.
+    Deliberately a SECOND source over the same API rather than a flag on
+    ep-opendata-agenda: the two dispositions are configured per source, and
+    KEY DEBATEs must stay standalone timed events (SOTEU is the example). The
+    extra fetches are the same handful of URLs.
+    KEY DEBATE children are excluded here by the parser, or SOTEU would land
+    both in the calendar and in the part-session's note.
+    PREFILTER IS LOAD-BEARING HERE, unlike most sources. The first live sweep
+    produced 53 items and auto-rejected NONE: this model returns 0.90 for
+    almost every verdict on these titles, and the auto-reject bar is 0.95. The
+    classifier's judgement was good (it flagged CBAM and dismissed one-minute
+    speeches) but never confident enough to act on, so everything queued —
+    ~640 items a year of clicking. Keywords derived from the profile's `eu`
+    cluster cut the same part-session to 6 and still caught "Recommendation on
+    EU-China political relations", the most valuable item on that agenda.
+    The cost is real and accepted: a China-relevant item phrased without any
+    of these words is auto-rejected without an LLM call. Prefilter rejections
+    stay visible and overridable in the Journal, and a human override there
+    feeds the classifier's few-shot loop — which is the designed remedy.

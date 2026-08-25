@@ -1,0 +1,536 @@
+# Glossar — the recurring formats behind the dates (issue #34).
+# Rendered by the dashboard's Glossar tab. Deliberately detached from the
+# event store: this describes WHAT we watch, not what is currently scheduled.
+# Keys per item: name, cadence, who, blurb. Extend freely; order is render order.
+
+- cluster: Germany
+  cluster_en: German institutional rhythm
+  items:
+    - name: Sitzungswoche (Bundestag)
+      cadence: ~20–22 weeks/year; annual Sitzungskalender published the autumn before
+      who: Bundestag
+      blurb: >-
+        Plenary weeks — the weeks in which China-relevant debates, votes and
+        government statements can actually happen. The skeleton is whitelisted
+        (Tier 1 ICS); relevance lives in the agendas, not the calendar entry.
+    - name: Bundesrat Plenarsitzung
+      cadence: ~11 sittings/year, usually Fridays; annual Terminplan
+      who: Bundesrat (Länder)
+      blurb: >-
+        The Länder chamber's plenary. The Tagesordnung publishes roughly two
+        weeks ahead; each TOP runs the relevance gate and, if accepted,
+        enriches the existing skeleton event rather than creating a new one.
+    - name: Bundestag Ausschusssitzung
+      cadence: during Sitzungswochen, per committee
+      who: Auswärtiger Ausschuss, Wirtschaft, EU, Menschenrechte, Verteidigung, Digitales
+      blurb: >-
+        Committee sittings, announced via the Tagesordnungen RSS. A committee
+        sitting is its own dated, timed event; the committee name is the
+        relevance signal (the notices carry no topics). Agenda PDFs get TOP
+        extraction.
+    - name: Bundespräsident appointments
+      cadence: continuous
+      who: Bundespräsidialamt
+      blurb: >-
+        State visits, receptions of foreign leaders, trips — the protocol layer
+        of German foreign policy. Asia-Pacific items surface here early.
+    - name: Deutsch-chinesische Regierungskonsultationen
+      cadence: roughly biennial when relations allow; no fixed rhythm
+      who: Bundesregierung (cabinet level) + State Council
+      blurb: >-
+        Full-cabinet consultations, the highest bilateral format. The 7th round
+        was June 2023 in Berlin; no 8th round is scheduled — a standing watch
+        item, because an announcement would be a major signal in itself.
+
+- cluster: EU / Brussels
+  cluster_en: EU institutional layer
+  items:
+    - name: European Council (EUCO)
+      expect:
+        rule: every_n_months
+        months: [3, 6, 10, 12]
+        match: ["European Council"]
+        look: consilium.europa.eu (www is bot-walled; try data.consilium.europa.eu)
+      cadence: quarterly plus specials (typical pattern Mar/Jun/Oct/Dec)
+      who: Heads of state and government, European Council President
+      blurb: >-
+        The EU summit. Economic security, trade defence and China strategy
+        surface here when they escalate. Forward dates appear in Council
+        ST-notes long before the meeting pages; no machine-readable feed.
+    - name: EU Council presidency
+      cadence: rotates every six months
+      who: "Member states (H2 2026 Ireland; H1 2027 Lithuania; H2 2027 Greece)"
+      blurb: >-
+        The rotating presidency sets the informal ministerial calendar
+        (Gymnich and friends) and colours the semester's trade agenda. The
+        handover dates are fixed points worth knowing cold.
+    - name: EU-China Summit
+      expect:
+        rule: irregular
+        match: ["EU-China Summit"]
+        look: Consilium, Commission readouts, MERICS
+        note: >-
+          No cadence to project against — timing floats with the state of
+          relations, so absence is never evidence of a miss. Standing watch
+          precisely because an announcement is itself the signal.
+      cadence: roughly annual, venue alternates; timing floats with relations
+      who: European Council/Commission presidents + Chinese leadership
+      blurb: >-
+        The single highest-value China event when it lands. The 25th summit was
+        July 2025 in Beijing; a 2026 edition is unset. Watch Consilium and the
+        specialist China observers — an announcement gets added immediately.
+    - name: Foreign Affairs Council / Trade Council
+      expect:
+        rule: irregular
+        match: ["Foreign Affairs Council", "Trade Council"]
+        look: consilium.europa.eu meeting calendar
+        note: >-
+          Nominally monthly, but the store holds none and no source is wired,
+          so a per-month rule would report the same dozen misses forever.
+          Stays irregular until a Council source exists.
+      cadence: FAC roughly monthly; trade formation a few times a year
+      who: EU foreign/trade ministers, High Representative
+      blurb: >-
+        Council formations where sanctions, trade-defence files and
+        China-policy conclusions are actually adopted. Consilium calendar is
+        authoritative but feed-less — scraping is on the source roadmap.
+    - name: EP plenary week
+      expect:
+        rule: every_n_months
+        months: [1, 2, 3, 4, 5, 6, 7, 9, 10, 11, 12]
+        match: ["EP - Plenary", "EP plenary", "part-session"]
+        confirms: ep-plenary-ical
+        look: data.europarl.europa.eu/api/v2/meetings (official; www is UA-walled)
+        note: >-
+          No August session. The current source is an unofficial annual mirror
+          that stops at the end of 2026 — this rule is what makes that cliff
+          visible rather than silent.
+      cadence: monthly Strasbourg sessions plus Brussels mini-plenaries
+      who: European Parliament
+      blurb: >-
+        Where China resolutions, trade-agreement consents and human-rights
+        urgencies get voted. The annual plenary calendar is published as
+        PDF/HTML; an unofficial iCal mirror exists.
+
+- cluster: Multilateral
+  cluster_en: summits and ministerials
+  items:
+    - name: G7 Summit
+      expect:
+        rule: annual
+        months: [5, 6, 7]
+        match: ["G7"]
+      cadence: annual, early summer; presidency rotates
+      who: "G7 + invited guests (2026 France, 2027 USA)"
+      blurb: >-
+        Leaders' summit plus a year-round ministerial track (foreign, finance,
+        trade). China-coordination language in the communiqués is the thing to
+        read; the German sherpa track feeds it.
+    - name: G20 Summit
+      expect:
+        rule: annual
+        months: [10, 11, 12]
+        match: ["G20 Leaders", "G20 Summit"]
+        note: Matches the leaders' summit only; the ministerial tracks are separate events.
+      cadence: annual leaders' summit (autumn/winter) + ministerials through the year
+      who: "G20 (2026 USA — Miami, 14–15 Dec announced)"
+      blurb: >-
+        The only leaders' table where the US, China and the EU all sit. The
+        foreign-ministers' and finance tracks are dated events in their own
+        right and often more substantive than the summit.
+    - name: APEC Economic Leaders' Meeting
+      expect:
+        rule: annual
+        months: [11]
+        match: ["APEC Economic Leaders"]
+      cadence: annual, November; host rotates
+      who: "21 Pacific-rim economies (2026 China — Shenzhen, 18–19 Nov)"
+      blurb: >-
+        Asia-Pacific economic summit; the 2026 edition is China's biggest
+        multilateral hosting of the year. CEO Summit and the joint
+        foreign/trade ministerial run alongside.
+    - name: ASEAN Summit + EAS / ASEAN+3
+      expect:
+        rule: annual
+        months: [10, 11]
+        match: ["ASEAN Summit"]
+        note: The autumn cluster only; the spring summit rarely carries partner formats.
+      cadence: summit cluster twice a year; the autumn one brings the partners
+      who: "ASEAN 11 + dialogue partners incl. China (Premier), EU, US (2026 chair: Philippines)"
+      blurb: >-
+        The autumn cluster (ASEAN Summit, East Asia Summit, ASEAN+3) is the
+        region's density peak — bilateral meetings on the margins are often
+        the real news for German/EU policy.
+    - name: BRICS Summit
+      expect:
+        rule: annual
+        months: [6, 7, 8, 9, 10]
+        match: ["BRICS"]
+        lead: dates firm up late, usually via the chair government rather than the bloc
+      cadence: annual; chair rotates
+      who: "BRICS+ (2026 chair: India)"
+      blurb: >-
+        Expanded-format summit; matters here as the counter-programme to the
+        G7 track and for what Beijing does with it. Dates often firm up late
+        and via the chair's government, not the bloc.
+    - name: SCO Summit
+      expect:
+        rule: annual
+        months: [6, 7, 8, 9, 10]
+        match: ["SCO Summit", "Shanghai Cooperation"]
+        lead: announced late by the Secretariat
+      cadence: annual Council of Heads of State
+      who: "SCO members (2026 host: Kyrgyzstan)"
+      blurb: >-
+        Security-flavoured China-Russia-Central-Asia format. Usually
+        announced late by the Secretariat; a projected window until then.
+    - name: UNGA High-Level Week
+      expect:
+        rule: annual
+        months: [9]
+        match: ["General Assembly", "UNGA"]
+      cadence: every September, New York
+      who: UN member states, General Debate at head-of-state level
+      blurb: >-
+        The week the whole foreign-policy world is in one city. German
+        chancellor/foreign-minister speeches and the China bilaterals on the
+        margins are the trackable items.
+    - name: COP (UN climate conference)
+      expect:
+        rule: annual
+        months: [11, 12]
+        match: ["UNFCCC", "COP3"]
+        look: unfccc.int is Imperva-walled; verify via Wikipedia or the host government
+      cadence: annual, November/December; host rotates
+      who: "UNFCCC parties (COP31: Antalya, 9–20 Nov 2026, Australia presiding)"
+      blurb: >-
+        Climate summit with a leaders' segment early in the programme.
+        China's pledges and EU-China climate diplomacy make it calendar-worthy
+        beyond the environment portfolio.
+    - name: NATO Summit
+      expect:
+        rule: annual
+        months: [6, 7]
+        match: ["NATO Summit"]
+      cadence: roughly annual
+      who: NATO members + IP4 partners (Australia, Japan, Korea, NZ)
+      blurb: >-
+        Relevant here for the Indo-Pacific partner track and the
+        China-language in the declarations. Autumn ministerials are dated
+        events too.
+    - name: Munich Security Conference (MSC)
+      expect:
+        rule: annual
+        months: [2]
+        match: ["Munich Security"]
+      cadence: annual, mid-February, Munich
+      who: "global security establishment (2027: 12–14 Feb)"
+      blurb: >-
+        Not a decision format, but the year's agenda-setting moment on German
+        soil — Chinese foreign-minister appearances and speech lines are
+        watched closely.
+    - name: WEF Davos
+      expect:
+        rule: annual
+        months: [1]
+        match: ["World Economic Forum", "Davos"]
+      cadence: annual, January
+      who: "World Economic Forum (2027: 18–22 Jan)"
+      blurb: >-
+        The economic mirror of MSC. China's delegation level (Premier or
+        below) is itself a signal; German business leadership attends in
+        force.
+
+- cluster: China
+  cluster_en: party-state rhythm
+  items:
+    - name: Two Sessions / Lianghui (NPC + CPPCC)
+      expect:
+        rule: annual
+        months: [3]
+        match: ["National People's Congress", "CPPCC", "Two Sessions", "Lianghui"]
+        confirms: npcobserver-sessions
+        lead: opening date voted by the NPCSC in late December
+      cadence: annual; CPPCC opens 4 March, NPC 5 March, ~one week
+      who: NPC, CPPCC, State Council
+      blurb: >-
+        The year's central political event — Government Work Report, growth
+        target, budget (incl. defence), ministerial press conferences. The
+        exact opening date is voted by the NPCSC in late December; the pattern
+        itself is near-invariant.
+    - name: NPC Standing Committee (NPCSC)
+      expect:
+        rule: every_n_months
+        months: [2, 4, 6, 8, 10, 12]
+        match: ["Standing Committee", "NPCSC"]
+        confirms: npcobserver-sessions
+        lead: about a week
+      cadence: roughly bi-monthly, typically end of even months, ~4 days
+      who: NPC Standing Committee
+      blurb: >-
+        Where legislation actually passes between the annual sessions —
+        export-control, tariff and data laws included. Sessions are announced
+        only days ahead; NPC Observer is the authoritative English tracker.
+    - name: Central Committee plenum
+      expect:
+        rule: annual
+        months: [10]
+        match: ["Plenum", "Central Committee"]
+        lead: Politburo signals months ahead, exact days only days ahead
+        note: >-
+          Roughly annual rather than guaranteed; a year with no plenum in
+          October is a finding worth checking, not necessarily an error.
+      cadence: ~annual within the five-year congress cycle, mostly October, ~4 days
+      who: CCP Central Committee (~370 members)
+      blurb: >-
+        Numbered plenums of the sitting Central Committee. The third plenum of
+        a cycle traditionally sets economic reform lines; the five-year-plan
+        plenum shapes everything downstream. Announced by the Politburo a few
+        months ahead, exact days days before.
+    - name: Politburo meeting
+      cadence: monthly, usually end of month
+      who: CCP Politburo (24)
+      blurb: >-
+        The April, July and December meetings set the economic-policy tone for
+        the following quarter and are read like central-bank statements.
+        Readouts publish the same evening via Xinhua.
+    - name: Beidaihe
+      expect:
+        rule: annual
+        months: [8]
+        match: ["Beidaihe"]
+        note: >-
+          Never announced and never verifiable — the signal is negative
+          (leaders absent from state media). Expect the projected window to
+          exist; do not expect it to resolve.
+      cadence: annually, roughly first half of August; never announced
+      who: current and retired top leadership
+      blurb: >-
+        The informal seaside conclave. There is no event to verify — the
+        signal is negative: leaders vanish from state media for ~two weeks.
+        Tracked as a projected window with an explicit non-resolution rule.
+    - name: Central Economic Work Conference (CEWC)
+      expect:
+        rule: annual
+        months: [12]
+        match: ["Central Economic Work"]
+        lead: about a week
+      cadence: annual, ~10–12 December, two days
+      who: party-state economic leadership
+      blurb: >-
+        Sets the coming year's economic priorities and the fiscal/monetary
+        stance; the growth target decided here surfaces at the March NPC.
+        Announced about a week prior — until then a pattern projection.
+    - name: CPC National Congress
+      expect:
+        rule: n_yearly
+        every_years: 5
+        anchor_year: 2022
+        months: [10]
+        match: ["National Congress of the Chinese Communist Party", "National Congress of the CCP", "National Congress of the CPC"]
+        lead: confirmed by a Central Committee plenum weeks ahead
+      cadence: every five years, autumn
+      who: "CCP (21st congress expected autumn 2027)"
+      blurb: >-
+        The five-yearly leadership event. 2027 is in tracking range: personnel
+        and Taiwan-policy signals will dominate every China calendar around
+        it.
+    - name: CIIE (China International Import Expo)
+      expect:
+        rule: annual
+        months: [11]
+        match: ["Import Expo", "CIIE"]
+      cadence: annual, 5–10 November, Shanghai
+      who: Ministry of Commerce; foreign exhibitors incl. large German contingent
+      blurb: >-
+        China's import-promotion fair with a leaders' opening ceremony.
+        For German industry a fixed ritual; the political weight varies with
+        the guest list.
+    - name: Boao Forum for Asia
+      expect:
+        rule: annual
+        months: [3]
+        match: ["Boao"]
+      cadence: annual, late March, Hainan
+      who: Asian governments and business; Chinese leadership speech
+      blurb: >-
+        "Asia's Davos", state-adjacent. The opening keynote is a reliable
+        vehicle for China's economic-opening messaging each spring.
+    - name: China Development Forum (CDF)
+      expect:
+        rule: annual
+        months: [3]
+        match: ["China Development Forum"]
+      cadence: annual, ~late March, Beijing
+      who: State Council (DRC) + foreign CEOs
+      blurb: >-
+        The premier's (or a vice-premier's) structured meeting with global
+        CEOs right after the Two Sessions — the corporate read on the new
+        year's policy.
+
+- cluster: Business & dialogue formats
+  cluster_en: German/EU business and dialogue formats
+  items:
+    - name: APK (Asien-Pazifik-Konferenz der deutschen Wirtschaft)
+      cadence: biennial, autumn, rotating Asian host city
+      who: "APA, BMWE, AA, German business (2026: Seoul, 29–31 Oct)"
+      blurb: >-
+        The flagship conference of German business in Asia, usually with
+        chancellor or ministerial participation. Deliberately the Phase 3
+        acceptance test of this tool's pipeline.
+    - name: Hamburg Summit — China meets Europe
+      cadence: roughly biennial, Hamburg
+      who: Handelskammer Hamburg + Chinese/European business and politics
+      blurb: >-
+        The Germany-based counterpart to the APK, China-specific. The next
+        edition is unconfirmed — a follow-up research item.
+    - name: EU-China-Dialoge (HED, Digital, Klima, Strategie)
+      cadence: nominally annual per strand; in practice tied to summit diplomacy
+      who: Commission EVPs + Chinese vice-premiers/State Councillors
+      blurb: >-
+        The sectoral dialogue architecture under the summit. Dates float and
+        are announced short-notice; each one is a watch item that usually
+        precedes or follows a leaders' meeting.
+    - name: OAV and BDI formats
+      cadence: continuous event calendars
+      who: OAV (Asien-Pazifik-Verein), BDI
+      blurb: >-
+        Association-level events — briefings, delegation trips, country days.
+        Individually small, but they carry early signals of who is travelling
+        where; both calendars are swept as Tier 1/2 sources.
+
+- cluster: Elections
+  cluster_en: elections layer
+  items:
+    - name: Elections in tracked regions
+      cadence: continuous; per-country cycles
+      who: IPU Parline (parliaments), ElectionGuide (presidencies), Bundeswahlleiterin (domestic)
+      blurb: >-
+        Parliamentary and presidential elections in tracked regions are always
+        relevant (profile v3) — governments change China policy. Grouped as
+        their own cluster in Vorschau and dotted in the Kalender view.
+    - name: Taiwan elections (national-scale)
+      expect:
+        rule: n_yearly
+        every_years: 2
+        anchor_year: 2026
+        months: [1, 11]
+        match: ["Taiwan"]
+        look: CEC announcements via Focus Taiwan / Taipei Times (cec.gov.tw itself untested)
+      cadence: alternating two-year rhythm — unified local election day (Nov 2026/2030), presidential + legislative (Jan 2028/2032)
+      who: Taiwan Central Election Commission
+      blurb: >-
+        National-scale dates only — the nine-in-one unified local election
+        day and the presidential/legislative election; individual races are
+        out of scope. Not covered by ipu-elections (locals and the
+        presidency are not parliamentary). On a China calendar because PRC
+        reaction — drills, economic coercion, disinformation — clusters
+        around these dates.
+
+- cluster: Policy deadlines
+  cluster_en: regulatory milestones — dates that happen without a meeting; nothing convenes, no feed announces them, gaps() cannot see them
+  items:
+    - name: EU AI Act application schedule
+      cadence: fixed staggered dates from the regulation, shifted by the 2026 Digital Omnibus
+      who: European Commission (AI Office); providers incl. Chinese AI firms on the EU market
+      blurb: >-
+        Prohibitions apply since Feb 2025, GPAI duties since Aug 2025,
+        transparency/labeling since Aug 2026. Still ahead: Annex III
+        high-risk obligations 2 Dec 2027 and Annex I embedded systems
+        2 Aug 2028 (the 2027 date is in the store, confirmed). The 2026
+        deferral was standards-driven, not substantive — watch for further
+        omnibus slippage.
+    - name: CBAM milestones
+      cadence: fixed dates from the definitive regime, staggered 2026–2027
+      who: European Commission / DEHSt; steel and aluminium importers
+      blurb: >-
+        Definitive phase since 1 Jan 2026; certificate sales open 1 Feb 2027
+        and the first surrender (2026 emissions) is due 30 Sep 2027 — both
+        in the store. The first real carbon border cost on Chinese steel and
+        aluminium; the scope extension to downstream goods is in the EP
+        pipeline (14 Sep plenary).
+    - name: EV countervailing-duty file
+      expect:
+        rule: irregular
+        match: ["countervailing"]
+        look: policy.trade.ec.europa.eu, Official Journal
+        note: >-
+          Review clocks give a window, not a date — a standing watch until
+          the Commission publishes.
+      cadence: procedural clocks; partial interim review opened Dec 2025, 12–15 months
+      who: European Commission DG TRADE; Chinese BEV makers, German OEMs
+      blurb: >-
+        Duties in force since Oct 2024. The interim review of a
+        minimum-import-price undertaking (guidance Jan 2026) concludes
+        roughly Dec 2026 – Mar 2027 — the decision point on whether tariffs
+        give way to a price floor. Feeds the FAC (Trade) on 30 Nov and the
+        TIC track.
+    - name: China export-control effective dates
+      expect:
+        rule: irregular
+        match: ["export control", "Exportkontrolle"]
+        look: MOFCOM announcements (english.mofcom.gov.cn), MERICS
+      cadence: irregular; announced with short lead, effective on stated dates
+      who: MOFCOM; German industry exposure (rare earths, gallium/germanium, graphite)
+      blurb: >-
+        Controls arrive as dated legal instruments — calendar events without
+        a meeting. The effective date, not the announcement, is when supply
+        chains feel it; both are worth recording when one lands.
+    - name: US-China tariff-truce deadlines
+      expect:
+        rule: irregular
+        match: ["truce"]
+        look: USTR, MOFCOM readouts, press
+      cadence: negotiated expiry dates, extended or lapsed at short notice
+      who: USTR + MOFCOM
+      blurb: >-
+        Truce and suspension arrangements carry expiry dates that markets
+        and Brussels both price in. Each expiry is a real calendar moment;
+        extensions usually come days before, so the standing date is the
+        thing to hold.
+
+- cluster: Manual watch
+  cluster_en: useful for dates but not automatable (blocked or impractical) — check by hand occasionally; verify via a corroborating source or "I checked this myself"
+  items:
+    - name: state.gov
+      covers: US-hosted formats — G20 ministerials, bilateral visit announcements
+      blocked: serves scripts a 200 "Technical Difficulties" page — looks like success, is a block
+      blurb: >-
+        US State Department press releases carry exact dates for US-hosted
+        meetings (e.g. G20 Foreign Ministers, Atlanta). The block is
+        deceptive because the status code is 200 — check the title, not the
+        code, when debugging a mysterious non-match (found 2026-08-03).
+    - name: consilium.europa.eu
+      covers: European Council and Council formations — EUCO, FAC, Trade Council dates
+      blocked: bot challenge, 403 to the engine; the data.consilium ST-document PDFs 500 as well
+      blurb: >-
+        The authoritative EU meeting calendar, with no ICS/RSS on top of the
+        block. The daily probe watches for the challenge to lift — once it
+        does, fetch & match works and a Consilium scraper becomes possible
+        (source backlog). Until then both EUCO 2026 dates rest on the ST-note
+        as read by a human.
+    - name: chathamhouse.org
+      covers: Chatham House events — China/Asia-Pacific panels and conferences
+      blocked: Cloudflare "Just a moment…" challenge (403) on pages and RSS alike
+      blurb: >-
+        The one major think tank of the London/Brussels set that scripts
+        cannot read (verified 2026-08-03) — ECFR, Brookings and Rhodium all
+        serve working RSS feeds. Their events would need a browser-side pass
+        or a human eye.
+    - name: asean.org notional calendar
+      covers: the ASEAN year — summits, ministerials, senior-officials meetings
+      blocked: not blocked — a periodically re-published PDF, impractical to parse
+      blurb: >-
+        The official "notional calendar" PDF is the fullest forward view of
+        the ASEAN track but moves URL and layout on every update. The PECC
+        event calendar (parser planned, #39) covers the summit-level subset
+        automatically; open the PDF by hand when the full ministerial detail
+        matters.
+    - name: apec2026.cn
+      covers: APEC 2026 host-year programme — SOMs, ministerials, CEO Summit
+      blocked: not blocked — a year-specific host site whose structure changes annually
+      blurb: >-
+        Each APEC host publishes its own site; parsing it would be rebuilt
+        yearly. The leaders' meeting and joint ministerial are already in the
+        store (gov.cn-verified); check the site by hand for the sub-meeting
+        schedule as Shenzhen approaches.

@@ -1,0 +1,12 @@
+[Unit]
+Description=Daily china-calendar store backup
+
+[Timer]
+# An hour before the sweep: every backup is a pre-sweep snapshot, so a bad
+# sweep (or a bad chat session later that day) rolls back to the same morning.
+OnCalendar=*-*-* 06:30
+RandomizedDelaySec=600
+Persistent=true
+
+[Install]
+WantedBy=timers.target

@@ -1,0 +1,57 @@
+# Production deployment (china-calendar#9 Phase C). The server clone runs it:
+#   cd ~/china-calendar/deploy/server && docker compose up -d --build
+# Secrets in ./.env (chmod 600, gitignored): PC_MCP_TOKEN, PC_LLM_API_KEY,
+# PC_NC_APP_PASSWORD.
+# MCP is loopback-only (#58) — the tunnel daemon connects from the host and
+# serves it at a public hostname; bearer AND OAuth both ride that. Do not
+# re-expose it on the LAN: the bearer token would cross it in clear.
+# The dashboard is still open on the LAN until an access policy fronts it.
+
+name: china-calendar
+
+services:
+  mcp:
+    build: ../..
+    container_name: china-calendar-mcp
+    restart: unless-stopped
+    user: "1000:1000"
+    ports:
+      - "127.0.0.1:8804:8804"
+    environment:
+      - PC_MCP_TOKEN=${PC_MCP_TOKEN}
+      # OAuth for an AI-assistant connector (#12): static client on the OIDC
+      # provider; empty values leave the server bearer-only.
+      - PC_OIDC_CLIENT_ID=${PC_OIDC_CLIENT_ID:-}
+      - PC_OIDC_CLIENT_SECRET=${PC_OIDC_CLIENT_SECRET:-}
+      - PC_PUBLIC_URL=${PC_PUBLIC_URL:-https://calendar-mcp.example.internal}
+      # fastmcp's OAuth proxy persists client registrations/tokens under
+      # XDG_DATA_HOME; the container user (1000) has no home dir.
+      - XDG_DATA_HOME=/data/auth-state
+      - PC_LLM_API_KEY=${PC_LLM_API_KEY}
+      # Point at any OpenAI-compatible endpoint. In production this is a
+      # self-hosted LLM gateway holding a revocable virtual key; the gateway
+      # picks the provider from the model-name prefix.
+      - PC_LLM_BASE_URL=${PC_LLM_BASE_URL:-https://llm-gateway.example.internal/v1}
+      - PC_CLASSIFIER_MODEL=provider/small-text
+      - PC_EXTRACTOR_MODEL=provider/large-text
+      - PC_NC_APP_PASSWORD=${PC_NC_APP_PASSWORD:-}
+      - PC_NC_CALENDAR=china-calendar
+      - TZ=Europe/Berlin
+    volumes:
+      - ../../store:/data/store
+      - ./auth-state:/data/auth-state
+
+  web:
+    build: ../..
+    command: ["pcal-web"]
+    container_name: china-calendar-web
+    restart: unless-stopped
+    user: "1000:1000"
+    ports:
+      - "127.0.0.1:8810:8810"
+    environment:
+      - PC_WEB_HOST=0.0.0.0
+      - PC_WEB_PORT=8810
+      - TZ=Europe/Berlin
+    volumes:
+      - ../../store:/data/store

@@ -1,0 +1,31 @@
+[project]
+name = "china-calendar"
+version = "0.1.0"
+description = "Date tracker for German foreign and foreign-economic policy, China/Asia-Pacific focus"
+requires-python = ">=3.12"
+dependencies = [
+    "pydantic>=2.7",
+    "typer>=0.12",
+    "pyyaml>=6.0",
+    "httpx>=0.27",
+    "icalendar>=5.0",
+    "feedparser>=6.0",
+    "selectolax>=0.3",
+    "fastmcp==3.4.7",  # pinned (#55): every rebuild re-resolved; drifted 3.4.5 -> 3.4.7 unnoticed
+    "pypdf>=4.0",
+]
+
+[project.scripts]
+pcal = "china_calendar.cli:app"
+pcal-mcp = "china_calendar.mcp_server:main"
+pcal-web = "china_calendar.webui:main"
+
+[dependency-groups]
+dev = ["pytest>=8.0"]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/china_calendar"]
