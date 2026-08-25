@@ -37,6 +37,24 @@ convention:
    and the sweep all call the same store through the same validation. There
    is no second write path to drift out of sync.
 
+## What it looks like
+
+The dashboard: triage queue, then the next 90 days with status badges and a
+source link on every verified date:
+
+![The dashboard](docs/media/cal-dashboard.png)
+
+The full store, filterable, with tier and verification state on each event:
+
+![The events view](docs/media/cal-events.png)
+
+The month grid, with long spans listed rather than smeared across cells:
+
+![The calendar view](docs/media/cal-calendar.png)
+
+There is also a 60-second [registry film](docs/media/registry-film.mp4)
+that walks through the engine on a real data snapshot.
+
 ## How it works
 
 ```mermaid
