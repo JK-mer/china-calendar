@@ -6,18 +6,14 @@ Asia-Pacific focused policy work.
 ## The problem
 
 The dates that shape a China-focused work programme (party plenums, NPC
-sessions, summits, elections, EU legislative deadlines) are scattered across
-dozens of sites, announced late, moved often, and sometimes never announced
-at all. Tracking them by hand means someone maintains a spreadsheet until
-they stop, and every date in it is only as trustworthy as the memory of
-whoever typed it.
+sessions, summits, elections, EU legislative deadlines) are scattered
+across dozens of sites, announced late, and moved often. Hand-maintained
+spreadsheets go stale, and no date in them says where it came from.
 
-china-calendar replaces the spreadsheet with an engine. It collects
-candidate dates from registered sources, triages them with an LLM gate,
-keeps a provenance record for every date it stores, and projects the result
-into a shared calendar that colleagues can simply subscribe to. The
-production instance currently tracks around 290 events from 19 registered
-sources, swept daily.
+china-calendar collects candidate dates from registered sources, triages
+them with an LLM gate, stores every date with its provenance, and projects
+the result into a shared calendar colleagues subscribe to. The production
+instance tracks around 290 events from 19 sources, swept daily.
 
 Generalised from a production system in daily use. The published version
 contains the architecture and code with a sample source registry and seed
@@ -27,35 +23,32 @@ visible in the screenshots and film below comes from public sources
 
 ## Two invariants
 
-The design hangs on two rules, and both are enforced in code rather than by
-convention:
+Both enforced in code, not by convention:
 
 1. **The model never originates a date.** Every date traces to a fetched
    source (URL, quoted evidence, retrieval timestamp) or an explicit human
-   statement. Verification is literal string matching against the fetched
-   text, never model judgement. The LLM classifies and extracts; it is not
-   trusted to remember.
-2. **One core, many adapters.** The CLI, the MCP server, the web dashboard
-   and the sweep all call the same store through the same validation. There
-   is no second write path to drift out of sync.
+   statement; verification is literal string matching, never model
+   judgement.
+2. **One core, many adapters.** CLI, MCP server, dashboard and sweep all
+   call the same store through the same validation; there is no second
+   write path.
 
-## What it looks like
+## Interface
 
-The dashboard: triage queue, then the next 90 days with status badges and a
-source link on every verified date:
+The dashboard: triage queue, then the next 90 days:
 
 ![The dashboard](docs/media/cal-dashboard.png)
 
-The full store, filterable, with tier and verification state on each event:
+The full store, filterable, with tier and verification state per event:
 
 ![The events view](docs/media/cal-events.png)
 
-The month grid, with long spans listed rather than smeared across cells:
+The month grid; long spans are listed, not smeared across cells:
 
 ![The calendar view](docs/media/cal-calendar.png)
 
-The 60-second registry film walks through the engine on a real data
-snapshot ([mp4 in full quality](docs/media/registry-film.mp4)):
+The 60-second registry film
+([mp4 in full quality](docs/media/registry-film.mp4)):
 
 ![The registry film](docs/media/registry-film.gif)
 
@@ -79,38 +72,27 @@ flowchart LR
 
 A daily sweep fetches every registered source, runs new items through the
 gate, verifies stored dates against their sources, and syncs the calendar.
-Trusted source and item-type pairs auto-accept; everything else waits in a
-triage inbox for a human decision. Each decision is appended to a ledger,
-and recent human decisions are fed back to the classifier as calibration
-examples, so the gate learns the profile of what the team actually wants.
+Trusted source and item-type pairs auto-accept; everything else waits in
+the triage inbox. Human decisions land in the ledger and feed back to the
+classifier as calibration examples.
 
-Provenance is graded, not binary. Tiers describe where a date came from
-(0 manual, 1 structured feeds, 2 scraped pages, 3 researched projections);
-statuses describe how solid it is (confirmed, scheduled, rumored, projected,
-unverified) and are assigned by the engine from the evidence, never by the
-caller. A projected window like a leadership retreat syncs as an all-day
-span with its status in the title, because an empty October reads as
-"nothing is happening", which is worse than "(Projected)".
+Provenance is graded. Tiers say where a date came from (0 manual, 1 feeds,
+2 scraped, 3 researched projections); statuses say how solid it is
+(confirmed, scheduled, rumored, projected, unverified) and are assigned by
+the engine from the evidence, never by the caller. Projected windows sync
+as all-day spans with the status in the title.
 
-## Design decisions that carry over
+## Design decisions
 
-- **Files over a database.** One JSON file per event plus an append-only
-  decision ledger and a generated index. Trivially backed up, diffed,
-  audited and restored; no migration risk for a store this size.
-- **Fail-safe fetching.** The fetch path refuses non-HTTP schemes and
-  private-network destinations (the classic SSRF holes), caps response
-  sizes, and honours ETags so unchanged sources cost nothing.
-- **Provider-agnostic LLM layer.** The classifier and extractor speak the
-  OpenAI-compatible chat API against whatever endpoint the environment
-  configures. Prompts are versioned files in the repo, token usage is
-  metered per day and visible on the dashboard.
-- **Human decisions are load-bearing.** Tier 0 records are immune to
-  automated modification, the triage inbox is the default path for anything
-  not explicitly trusted, and the ledger records who or what decided.
-- **The calendar is a projection.** Store to calendar is one-way; the store
-  is the source of truth and a calendar edit is overwritten on the next
-  sync. Colleagues consume a read-only subscription, not a shared editable
-  calendar that slowly rots.
+- Files over a database: one JSON file per event, an append-only decision
+  ledger, a generated index.
+- SSRF-guarded fetching: scheme and private-network checks, response-size
+  caps, ETag caching.
+- Provider-agnostic LLM layer via OpenAI-compatible API endpoints;
+  versioned prompt files; per-day token metering.
+- Human decisions are load-bearing: Tier 0 records are immune to
+  automation, triage is the default path, the ledger records who decided.
+- The calendar is a one-way projection; the store is the source of truth.
 
 ## Deployment
 
@@ -120,15 +102,14 @@ loopback and is published through a tunnel; AI assistants authenticate via
 OAuth against a self-hosted identity provider, other clients via bearer
 token. The dashboard, digest and change notifications ride the same box.
 
-## What integrating this at MERICS would look like
+## Integration at MERICS
 
-The engine is a self-contained Python package with no infrastructure
-opinions beyond "somewhere to run a daily job". An institutional deployment
-would adapt the source registry to the team's watchlist, point the LLM
-layer at a sanctioned endpoint, and sync into a calendar on the existing
-groupware. The triage inbox is deliberately small surface: one person
-spending minutes a day keeps the calendar trustworthy, and the provenance
-ledger means anyone can ask "why is this date here?" and get an answer.
+The engine is a self-contained Python package needing only somewhere to
+run a daily job. An institutional deployment adapts the source registry to
+the team's watchlist, points the LLM layer at a sanctioned endpoint, and
+syncs into a calendar on the existing groupware. Triage costs one person
+minutes a day, and the ledger answers "why is this date here?" for any
+entry.
 
 ## Repository map
 
@@ -146,7 +127,7 @@ ledger means anyone can ask "why is this date here?" and get an answer.
 | [deploy/](deploy/) | Containers, systemd units, migrations |
 | [tests/](tests/) | 265 tests, run with `uv run pytest` |
 
-## Running it
+## Usage
 
 ```sh
 uv sync
