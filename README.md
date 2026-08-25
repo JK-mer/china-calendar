@@ -21,7 +21,9 @@ sources, swept daily.
 
 Generalised from a production system in daily use. The published version
 contains the architecture and code with a sample source registry and seed
-file; the event store is data, not code, and is not in the repo.
+file; the event store is data, not code, and is not in the repo. Everything
+visible in the screenshots and film below comes from public sources
+(official calendars, feeds and press pages).
 
 ## Two invariants
 
