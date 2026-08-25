@@ -102,14 +102,21 @@ loopback and is published through a tunnel; AI assistants authenticate via
 OAuth against a self-hosted identity provider, other clients via bearer
 token. The dashboard, digest and change notifications ride the same box.
 
-## Integration at MERICS
+## Integration with chat interfaces
 
-The engine is a self-contained Python package needing only somewhere to
-run a daily job. An institutional deployment adapts the source registry to
-the team's watchlist, points the LLM layer at a sanctioned endpoint, and
-syncs into a calendar on the existing groupware. Triage costs one person
-minutes a day, and the ledger answers "why is this date here?" for any
-entry.
+The MCP server (`pcal-mcp`, streamable HTTP) exposes the store as tools:
+search, upcoming events, event details, triage, verification. A chat UI
+connected to it can answer "what's coming in October?" from the store,
+with tier and source attached to every date.
+
+- Local assistants (Claude Desktop, Claude Code, and other MCP clients):
+  connect to the HTTP endpoint with the bearer token (`PC_MCP_TOKEN`).
+- Self-hosted chat UIs, OpenWebUI as the example: add the endpoint as an
+  MCP tool server (directly over streamable HTTP, or through its `mcpo`
+  OpenAPI bridge). Every user of the shared UI then queries the same
+  store the calendar is projected from.
+- Write tools go through the same validation as the CLI; provenance rules
+  hold no matter which interface asks.
 
 ## Repository map
 
