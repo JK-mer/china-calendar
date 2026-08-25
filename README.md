@@ -52,8 +52,10 @@ The month grid, with long spans listed rather than smeared across cells:
 
 ![The calendar view](docs/media/cal-calendar.png)
 
-There is also a 60-second [registry film](docs/media/registry-film.mp4)
-that walks through the engine on a real data snapshot.
+The 60-second registry film walks through the engine on a real data
+snapshot ([mp4 in full quality](docs/media/registry-film.mp4)):
+
+![The registry film](docs/media/registry-film.gif)
 
 ## How it works
 
